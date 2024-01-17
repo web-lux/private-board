@@ -14,9 +14,16 @@ async function main() {
   await mongoose.connect(mongoDB);
 };
 
+app.set('view engine', 'ejs');
+
 app.get("/", (req, res) => {
-    res.send("OK");
+  res.render("index");
 });
+
+app.get("/sign-up", (req, res) => {
+  res.render("sign-up");
+});
+
 
 app.listen("3000", () => {
     console.log("Listening on port 3000...")
