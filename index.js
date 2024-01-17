@@ -35,7 +35,7 @@ app.post("/sign-up", [
   body("lastName", "Last name cannot be empty").trim().notEmpty().isLength({ min:1, max: 64 }).withMessage("Your last name cannot be longer than 64 characters"),
   body("username", "Username cannot be empty").trim().notEmpty().isEmail().withMessage("Please input an email as your username").custom(async value => {
     const user = await Users.find({ username: value });
-    if (user) {
+    if (user.length !== 0) {
       throw new Error("Email already in use");
     }
   }),
