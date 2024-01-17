@@ -4,7 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { body, validationResult, matchedData } = require("express-validator");
 const bcrypt = require("bcryptjs");
-const Users = require("./models/users");
+const User = require("./models/users");
 
 const app = express();
 
@@ -34,7 +34,7 @@ app.post("/sign-up", [
   body("firstName", "First name cannot be empty").trim().notEmpty().isLength({ min:1, max: 64 }).withMessage("Your first name cannot be longer than 64 characters"),
   body("lastName", "Last name cannot be empty").trim().notEmpty().isLength({ min:1, max: 64 }).withMessage("Your last name cannot be longer than 64 characters"),
   body("username", "Username cannot be empty").trim().notEmpty().isEmail().withMessage("Please input an email as your username").custom(async value => {
-    const user = await Users.find({ username: value });
+    const user = await User.find({ username: value });
     if (user.length !== 0) {
       throw new Error("Email already in use");
     }
@@ -55,7 +55,7 @@ app.post("/sign-up", [
             throw new Error("Error during password encryption");
           } else {
             // ... and if there is still no errors, proceed to create a new user and add them to the database
-            const newUser = new Users({
+            const newUser = new User({
               firstName: req.body.firstName,
               lastName: req.body.lastName,
               username: req.body.username,
