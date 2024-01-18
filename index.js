@@ -140,6 +140,24 @@ app.get("/log-out", (req, res, next) => {
   });
 });
 
+app.get("/clubhouse", (req, res) => {
+  res.render("secret-form");
+});
+
+app.post("/clubhouse", [
+  body("secretPassword", "Wrong Password :p").trim().escape().equals(process.env.CLUBHOUSE_PASSWORD),
+  async (req, res) => {
+    const validationError = validationResult(req);
+    if (validationError.isEmpty()) {
+      const updatedUser = { ...req.user._doc, isMember: true, isAdmin: req.body.isAdmin ? true : false};
+      await User.findByIdAndUpdate(req.user._doc._id, updatedUser, {}).exec();
+      res.redirect("/");
+    } else { 
+      res.render("secret-form", {errors: validationError.array()})
+    }
+  }
+]);
+
 app.listen("3000", () => {
     console.log("Listening on port 3000...")
 });

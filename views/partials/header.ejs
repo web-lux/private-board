@@ -8,6 +8,8 @@
             <% } %>
             <% if (currentUser) { %>
                 <li><a href="/log-out">Log Out</a></li>
+            <% } %>
+            <% if (currentUser && !currentUser.isMember) { %>
                 <li><a href="/clubhouse">Join the club !</a></li>
             <% } %>
         </ul>
