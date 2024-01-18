@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const { body, validationResult, matchedData } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const User = require("./models/users");
+const Message = require("./models/messages");
 
 // get database connection url via env variable
 const mongoDB = process.env.DB_URL;
@@ -67,9 +68,26 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.render("index");
+app.get("/", async (req, res) => {
+  const messages = await Message.find().populate("author").exec();
+  res.render("index", {messages: messages});
 });
+
+app.post("/", [
+  body("title").trim().escape().isLength({ min: 1, max: 64 }).withMessage("Title has to be between 1 and 64 characters"),
+  body("text").trim().escape().isLength({ min:1, max: 3000 }).withMessage("Message has to be between 1 and 3000 characters"),
+  async (req, res) => {
+    const validationError = validationResult(req);
+
+    if (validationError.isEmpty()) {
+      const newMessage = new Message({ title: req.body.title, text: req.body.text, timestamp: Date.now(), author: res.locals.currentUser._id });
+      await newMessage.save();
+      res.redirect("/");
+    } else {
+      res.render("index", { errors: validationError.array(), message: matchedData(req, { onlyValidData: false }) });
+    }
+  }
+])
 
 app.get("/sign-up", (req, res) => {
   res.render("sign-up");
