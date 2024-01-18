@@ -4,5 +4,8 @@
     <%-  include("./partials/header.ejs") %>
     <main>
         <h1>Index</h1>
+        <% if (currentUser) { %>
+            <h2>Hello <%= currentUser.fullName %> !</h2>
+        <% } %>
     </main>
 </body>
